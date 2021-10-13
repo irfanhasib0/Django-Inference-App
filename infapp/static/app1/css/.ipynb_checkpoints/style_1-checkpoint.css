@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  display: flex;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+    
+.column
+{   
+    float: left;
+    width: 50%;
+    padding: 200px;
+    height: 300px;
+}
+
+body{
+    background-color: #FFFFFF
+}
+/*remove standard list and bullet formatting from ul*/
+.columns1 ul
+{
+    margin: 20px;
+    padding: 0;
+    list-style-type: none;
+}
+
+.header {
+  padding: 6px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+}
+
+/* correct webkit/chrome uneven margin on the first column*/
