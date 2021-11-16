@@ -10,19 +10,38 @@
 </head>
 
 <body>
+    
 <div class="header">
   <h1>I/O Dashboard</h1>
-    
-<div class="column">
-    <h4 style="color:grey"> Frames <h4/>
-    <img id = "graph_2" alt=""/>
-</div>
-    
-<div  class="column">
-    <img id = "graph_3" alt=""/>
 </div>
 
+<h4 style="color:grey"> Frames <h4/>
+    <form method="post" action="upload_image" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="file" id="img" name="video">
+    <input type="submit">
+    </form><br>
+<div class="row">
+    <canvas id="graph_2" width="950" height="400" style="border:10px solid #888888;"></canvas>
 </div>
+    
+<!--div class="column">
+    <img id = "graph_1" alt=""/>
+    <canvas id="graph_3" width="400" height="400" style="border:1px solid #000000;"></canvas>
+</div-->
+
+<h4 style="color:grey"> Video <h4/>
+    <form method="post" action="upload_image" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="file" id="img" name="image">
+    <input type="submit">
+    </form><br>
+<div class = "row">
+    <canvas id="graph_1" width="950" height="400" style="border:10px solid #888888;"></canvas>
+</div>
+    
 </body>
 </html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
