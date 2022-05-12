@@ -1,3 +1,4 @@
+#docker-compose run web django-admin startproject webapp .
 var layout = {
   title: 'I/O-2',
   uirevision:'true',

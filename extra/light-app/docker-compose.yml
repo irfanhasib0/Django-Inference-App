@@ -1,0 +1,23 @@
+version: "3.9"
+   
+services:
+  flask_server:
+    container_name: flask_server
+    build: ./docker_web
+    command: python scripts/run.py
+    volumes:
+      - .:/code
+      - /mnt/d:/data
+    ports:
+      - "7002:7002"
+      
+  python_app:
+    container_name: python_app
+    build: ./docker_jupyter
+    command: jupyter lab --ip=0.0.0.0 --port 7003 --allow-root --no-browser --NotebookApp.token='' --NotebookApp.password='' --notebook-dir=/src
+    volumes:
+      #- .:/src
+      - /mnt/e/Inference-App:/src
+      - /mnt/d:/data
+    ports:
+      - "7003:7003"

@@ -17,7 +17,8 @@ var image_1 = get_frame_1(xhttp_image_1)
 var image_2 = get_frame_2(xhttp_image_2)
 
 var cnt = 0;
-var interval = setInterval(function() {
+
+function run_loop() {
 
 var canvas_1 = document.getElementById('graph_1')
 var ctx_1    = canvas_1.getContext("2d") 
@@ -47,5 +48,8 @@ base_image_2b.onload = function(){
     ctx_2.drawImage(base_image_2b, 500, 50);
 }
 
-if(cnt === 100) clearInterval(interval);
-}, 500);
+if(cnt === 10)
+clearInterval(interval);
+}
+
+var interval = setInterval(run_loop, 50);

@@ -5,8 +5,10 @@
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <link rel="stylesheet"  href="{% static 'monitor/css/style_1.css' %}">
-  <script src="{% static 'monitor/js/graph.js' %}"></script>
+  <!--link rel="stylesheet"  href="{% static 'monitor/css/style_1.css' %}">
+  <script src="{% static 'monitor/js/graph.js' %}"></script-->
+  <link rel="stylesheet"  href="../static/monitor/css/style_1.css">
+  <script src="../static/monitor/js/graph.js"></script>
 </head>
 
 <body>
@@ -15,7 +17,7 @@
   <h1>I/O Dashboard</h1>
 </div>
 
-<h4 style="color:grey"> Frames <h4/>
+    <h4 style="color:grey"> Video <h4/>
     <form method="post" action="upload_image" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
@@ -26,12 +28,27 @@
     <canvas id="graph_2" width="950" height="400" style="border:10px solid #888888;"></canvas>
 </div>
     
-<!--div class="column">
-    <img id = "graph_1" alt=""/>
-    <canvas id="graph_3" width="400" height="400" style="border:1px solid #000000;"></canvas>
-</div-->
+<div class="row" id="dashboard">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env> 
+        - matplotlib
+        - numpy
+    </py-env>
+    <py-script output='dashboard'>
+#import numpy as np
+#from matplotlib import pyplot as plt
+#fig,axes = plt.subplots()
+#x = np.arange(i,i+10)
+#y = np.sin(x)
+#print(x)
+#plt.plot(x,y)
+#plt.grid()
+#fig
+    </py-script>
+</div>
 
-<h4 style="color:grey"> Video <h4/>
+<h4 style="color:grey"> Images <h4/>
     <form method="post" action="upload_image" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
@@ -40,6 +57,7 @@
     </form><br>
 <div class = "row">
     <canvas id="graph_1" width="950" height="400" style="border:10px solid #888888;"></canvas>
+    <!--image id="graph_3" src='/media/img.jpg' width="950" height="400" style="border:10px solid #888888;"></image-->
 </div>
     
 </body>
