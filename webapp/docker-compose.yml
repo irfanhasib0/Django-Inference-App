@@ -56,6 +56,8 @@ services:
       CVAT_HOST: localhost
     ports:
       - '9006:9006'
+      - '9007:9007'
+      - '1935:1935'
     volumes:
       - ./docker_nginx/nginx.conf:/etc/nginx/conf/nginx.conf:ro
       - ./docker_nginx/http.conf:/etc/nginx/conf/http.conf:ro
