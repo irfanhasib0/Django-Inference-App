@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-9*3p3+ujk=+0!y8!4uwch-*!ku#hw13^_2-0iwut_9e=9e%(u1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['deeplabbd.com','106.168.136.206','192.168.0.15','localhost','127.0.0.1']
 
 
 # Application definition

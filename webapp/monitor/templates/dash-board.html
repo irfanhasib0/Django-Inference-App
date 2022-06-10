@@ -3,20 +3,46 @@
 <html lang="en">
 <html>
 <head>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+  <!--script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script-->
+  <!--script defer src="https://pyscript.net/alpha/pyscript.js"></script-->
+  <!-- Or if you want a more recent canary version -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
   <!--link rel="stylesheet"  href="{% static 'monitor/css/style_1.css' %}">
   <script src="{% static 'monitor/js/graph.js' %}"></script-->
   <link rel="stylesheet"  href="../static/monitor/css/style_1.css">
-  <script src="../static/monitor/js/graph.js"></script>
+  <link rel="stylesheet"  href="../static/monitor/css/note.css">
+  <script type="module" src="../static/monitor/js/graph.js"></script>
+  <script type="module" src="../static/monitor/js/note.js"></script>
+  <script type="module" src="../static/monitor/js/frame.js"></script>
+  <script type="module" src="../static/monitor/js/button.js"></script>
+  <!--script src="../static/monitor/js/stream_hls.js"></script-->
 </head>
-
 <body>
+<style>
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.bg_green {background-color: #4CAF50;} /* Green */
+.bg_blue {background-color: #008CBA;} /* Blue */
+</style>
     
 <div class="header">
-  <h1>I/O Dashboard</h1>
+<h1>I/O Dashboard</h1>
 </div>
-
+<br>
     <h4 style="color:grey"> Video <h4/>
     <form method="post" action="upload_image" enctype="multipart/form-data">
     {% csrf_token %}
@@ -24,45 +50,38 @@
     <input type="file" id="img" name="video">
     <input type="submit">
     </form><br>
+<div class="row"> 
+<button type="button" class="button bg_blue" onclick="alert('accessing camera')">camera</button><br>
+<button type="button" class="button bg_green" onclick="alert('accessing camera')">video</button><br>
+<canvas id="files" width="500" height="50" style="border:1px solid #888888;"></canvas>
+</div>
 <div class="row">
     <canvas id="graph_2" width="950" height="400" style="border:10px solid #888888;"></canvas>
 </div>
-
+<div id="app">
+  <button class="add-note" type="button">+</button>
+</div>     
+<h4>HLS Video Stream </h4><br>
 <div class="row">
-<h4> Test Video <h4>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<!-- Or if you want a more recent canary version -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
-<video id="video_hls" muted="muted"></video>
-<script>
-  var video_hls = document.getElementById('video_hls');
-  if(Hls.isSupported()) {
-    console.log('if --- 1')
-    var hls = new Hls();
-    hls.loadSource('http://localhost:9007/hls/stream.m3u8');
-    hls.attachMedia(video_hls);
-    hls.on(Hls.Events.MANIFEST_PARSED,function() {
-      video_hls.play();
-  });
- }
- // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
- // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element throught the `src` property.
- // This is using the built-in support of the plain video element, without using hls.js.
- // Note: it would be more normal to wait on the 'canplay' event below however on Safari (where you are most likely to find built-in HLS support) the video.src URL must be on the user-driven
- // white-list before a 'canplay' event will be emitted; the last video event that can be reliably listened-for when the URL is not on the white-list is 'loadedmetadata'.
-  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    console.log('if --- 2')
-    video_hls.src = 'http://localhost:9007/hls/stream.m3u8';
-    video_hls.addEventListener('loadedmetadata',function() {
-    video_hls.play();
-    });
-  }
-</script>
+<!--video id="video_hls" width="320" height="256" muted="muted" style="border:10px solid #888888;"></video-->
+<!--canvas width="950" height="450" style="border:10px solid #888888;">
+<video id="video_hls" muted="muted" style="border:10px solid #888888;"></video>
+</canvas-->
+<!--script>
+//var video_hls = document.getElementById('video_hls');
+  //if(Hls.isSupported()) {
+  //  console.log('if --- 1')
+  //  var hls = new Hls();
+  //  hls.loadSource('/hls/stream.m3u8');
+  //  hls.attachMedia(video_hls);
+  //  hls.on(Hls.Events.MANIFEST_PARSED,function() {
+  //    video_hls.play();
+  //});
+// }
+</script-->
 </div>
 
-<div class="row" id="dashboard">
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+<!--div class="row" id="dashboard">
     <py-env> 
         - matplotlib
         - numpy
@@ -78,7 +97,7 @@
 #plt.grid()
 #fig
     </py-script>
-</div>
+</div-->
 
 <h4 style="color:grey"> Images <h4/>
     <form method="post" action="upload_image" enctype="multipart/form-data">

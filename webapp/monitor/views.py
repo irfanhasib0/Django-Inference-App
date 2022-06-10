@@ -47,10 +47,6 @@ def image_1(request):
     image_data = base64.b64encode(image_data).decode('utf-8')
     return HttpResponse(image_data,content_type='image/png')
 
-
-
-
-
 def _image_2(request):
     path='/code/media/img.jpg'
     img = cv2.imread(path)
