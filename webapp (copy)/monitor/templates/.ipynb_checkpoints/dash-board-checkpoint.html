@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<html>
+<head>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+  <!--script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script-->
+  <!--script defer src="https://pyscript.net/alpha/pyscript.js"></script-->
+  <!-- Or if you want a more recent canary version -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
+  <!--link rel="stylesheet"  href="{% static 'monitor/css/style_1.css' %}">
+  <script src="{% static 'monitor/js/graph.js' %}"></script-->
+  <link rel="stylesheet"  href="../static/monitor/css/style_1.css">
+  <script type="module" src="../static/monitor/js/graph.js"></script>
+  <script type="module" src="../static/monitor/js/frame.js"></script>
+  <script type="module" src="../static/monitor/js/button.js"></script>
+  <script type="module" src="../static/monitor/js/node_exp.js"></script>
+  <!--script src="../static/monitor/js/stream_hls.js"></script-->
+</head>
+<body>
+<style>
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.bg_green {background-color: #4CAF50;} /* Green */
+.bg_blue {background-color: #008CBA;} /* Blue */
+</style>
+    
+<div class="header">
+<h1>I/O Dashboard</h1>
+</div>
+<br>
+    <h4 style="color:grey"> Video <h4/>
+    <form method="post" action="upload_image" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="file" id="img" name="video">
+    <input type="submit">
+    </form><br>
+<div class="row"> 
+<button type="button" class="button bg_blue" onclick="alert('accessing camera')">camera</button><br>
+<button type="button" class="button bg_green" onclick="alert('accessing camera')">video</button><br>
+<canvas id="files" width="500" height="50" style="border:1px solid #888888;"></canvas>
+</div>
+<div class="row">
+    <canvas id="graph_2" width="950" height="400" style="border:10px solid #888888;"></canvas>
+</div>
+        
+<h4>HLS Video Stream </h4><br>
+<div class="row">
+<!--video id="video_hls" width="320" height="256" muted="muted" style="border:10px solid #888888;"></video-->
+<!--canvas width="950" height="450" style="border:10px solid #888888;">
+<video id="video_hls" muted="muted" style="border:10px solid #888888;"></video>
+</canvas-->
+<!--script>
+//var video_hls = document.getElementById('video_hls');
+  //if(Hls.isSupported()) {
+  //  console.log('if --- 1')
+  //  var hls = new Hls();
+  //  hls.loadSource('/hls/stream.m3u8');
+  //  hls.attachMedia(video_hls);
+  //  hls.on(Hls.Events.MANIFEST_PARSED,function() {
+  //    video_hls.play();
+  //});
+// }
+</script-->
+</div>
+
+<!--div class="row" id="dashboard">
+    <py-env> 
+        - matplotlib
+        - numpy
+    </py-env>
+    <py-script output='dashboard'>
+#import numpy as np
+#from matplotlib import pyplot as plt
+#fig,axes = plt.subplots()
+#x = np.arange(i,i+10)
+#y = np.sin(x)
+#print(x)
+#plt.plot(x,y)
+#plt.grid()
+#fig
+    </py-script>
+</div-->
+
+<h4 style="color:grey"> Images <h4/>
+    <form method="post" action="upload_image" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="file" id="img" name="image">
+    <input type="submit">
+    </form><br>
+<div class = "row">
+    <canvas id="graph_1" width="950" height="400" style="border:10px solid #888888;"></canvas>
+    <!--image id="graph_3" src='/media/img.jpg' width="950" height="400" style="border:10px solid #888888;"></image-->
+</div>
+    
+</body>
+</html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+

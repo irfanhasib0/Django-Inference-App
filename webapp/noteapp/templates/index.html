@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+  <link rel="stylesheet"  href="../static/monitor/css/style_1.css">
+  <link rel="stylesheet"  href="../static/monitor/css/note.css">
+  <script type="module" src="../static/monitor/js/graph.js"></script>
+  <script type="module" src="../static/monitor/js/note.js"></script>
+  <script type="module" src="../static/monitor/js/frame.js"></script>
+  <script type="module" src="../static/monitor/js/button.js"></script>
+  <!--script src="../static/monitor/js/stream_hls.js"></script-->
+</head>
+
+<body>
+<style>
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.bg_green {background-color: #4CAF50;} /* Green */
+.bg_blue {background-color: #008CBA;} /* Blue */
+</style>
+    
+<div class="header">
+<h1>NoteBooks</h1>
+</div>
+
+<div class="row"> 
+<button type="button" class="button bg_blue" onclick="alert('accessing camera')">camera</button><br>
+<button type="button" class="button bg_green" onclick="alert('accessing camera')">video</button><br>
+<canvas id="files" width="500" height="50" style="border:1px solid #888888;"></canvas>
+</div>
+
+<div id="app">
+  <button class="add-note" type="button">+</button>
+</div> 
+    
+</body>
+</html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+

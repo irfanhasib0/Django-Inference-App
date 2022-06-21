@@ -1,5 +1,5 @@
 version: "3.3"
-   
+  
 services:
   db:
     container_name: db
@@ -17,6 +17,7 @@ services:
     #networks:
     #  - web
     
+  
   web:
     container_name: web
     build: ./docker_web
@@ -34,16 +35,77 @@ services:
     #networks:
     #  - web_net
       
-  sever:
-    container_name: server
-    build: ./docker_jupyter
-    command: jupyter lab --ip=0.0.0.0 --port 9003 --allow-root --no-browser --notebook-dir=../../ --token='123'
+  #sever:
+  #  container_name: runner
+  #  build: ./docker_jupyter
+  #  command: jupyter lab --ip=0.0.0.0 --port 9003 --allow-root --no-browser --notebook-dir=../../
+  #  devices:
+  #    - /dev/video0:/dev/video0
+  #  volumes:
+  #    - ./:/data
+  #    - ./media:/webapp/media
+  #  ports:
+  #    - "9003:9003"
+      
+  #node_app:
+  #  container_name: files
+  #  build: ./docker_node
+  #  restart: always
+  #  depends_on:
+  #    - web
+  #  ports:
+  #    - '9007:9007'
+  #  volumes:
+  #    #- ./docker_node:/usr/local/share/node
+  #    - ./files/media:/media
+  #  #command: /bin/sh -c "node /usr/local/share/node/index.js"
+  
+  mysql_db:
+    image: mysql
+    restart: always
+    cap_add:
+      - SYS_NICE
     volumes:
-      #- .:/src
-      - ./Inference-App:/src
-      - ./:/data
+      - "./app_server/setup.sql:/docker-entrypoint-initdb.d/setup.sql"
     ports:
-      - "9003:9003"
+      - "9906:3306"
+    environment:
+      MYSQL_DATABASE: books
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_HOST: localhost
+    #command:
+    #  - /bin/sh -c 'chown mysql:mysql /var/log/mysql'
+    
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: "./app_server"
+    environment:
+    depends_on:
+      - mysql_db
+    volumes:
+      - /app/node_modules
+      - ./app_server:/app
+    environment:
+      MYSQL_DATABASE: books
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_HOST_IP: mysql_db
+    
+
+  client:
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    build:
+      dockerfile: Dockerfile
+      context: "./app_client"
+    volumes:
+      - /app/node_modules
+      - ./app_client:/app
+      - ./app_client/index.html:/app/index.html
       
   cvat_proxy:
     container_name: cvat_proxy
@@ -51,18 +113,20 @@ services:
     restart: always
     build : ./docker_nginx
     depends_on:
+      - api
       - web
     environment:
       CVAT_HOST: localhost
     ports:
       - '9006:9006'
-      - '9007:9007'
       - '1935:1935'
+      
     volumes:
-      - ./docker_nginx/nginx.conf:/etc/nginx/conf/nginx.conf:ro
-      - ./docker_nginx/http.conf:/etc/nginx/conf/http.conf:ro
-      - ./static:/webapp/static
-      - ./media:/webapp/media
+      - ./docker_nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./docker_nginx/conf/http.conf:/etc/nginx/conf/http.conf:ro
+      - ./docker_nginx/conf/rtmp.conf:/etc/nginx/conf/rtmp.conf:ro
+      - ./files/static:/webapp/static
+      - ./files/media:/webapp/media
       #- ./docker_nginx/uwsgi_params:/etc/nginx/uwsgi_params:ro
     command: /bin/sh -c "/etc/nginx/sbin/nginx -g 'daemon off;'"
    

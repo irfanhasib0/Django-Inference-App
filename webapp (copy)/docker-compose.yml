@@ -1,0 +1,92 @@
+version: "3.3"
+   
+services:
+  db:
+    container_name: db
+    image: postgres
+    volumes:
+      #- ./data/db:/var/lib/postgresql/data
+      - /home/hasib/db:/var/lib/postgresql/data
+    environment:
+      #- POSTGRES_HOST=0.0.0.0
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    #networks:
+    #  - web
+    
+  web:
+    container_name: web
+    build: ./docker_web
+    #command: python manage.py runserver 0.0.0.0:9002
+    command: uwsgi --socket :9002 --module webapp.wsgi --uid 1000 --gid 2000
+    volumes:
+      - ./:/code
+      - ./:/data
+      - ./docker_web/registry.py:/usr/local/lib/python3.8/site-packages/django/apps/registry.py:ro
+    ports:
+      - "9002:9002"
+      - "9005:9005"
+    depends_on:
+      - db
+    #networks:
+    #  - web_net
+      
+  sever:
+    container_name: runner
+    build: ./docker_jupyter
+    command: jupyter lab --ip=0.0.0.0 --port 9003 --allow-root --no-browser --notebook-dir=../../
+    devices:
+      - /dev/video0:/dev/video0
+    volumes:
+      - ./:/data
+      - ./media:/webapp/media
+    ports:
+      - "9003:9003"
+      
+  node_app:
+    container_name: nodejs
+    build: ./docker_node
+    restart: always
+    depends_on:
+      - web
+    ports:
+      - '9007:9007'
+    volumes:
+      #- ./docker_node:/usr/local/share/node
+      - ./files/media:/media
+    #command: /bin/sh -c "node /usr/local/share/node/index.js"
+        
+  cvat_proxy:
+    container_name: cvat_proxy
+    image: nginx:stable-alpine
+    restart: always
+    build : ./docker_nginx
+    depends_on:
+      - web
+    environment:
+      CVAT_HOST: localhost
+    ports:
+      - '9006:9006'
+      - '1935:1935'
+      
+    volumes:
+      - ./docker_nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./docker_nginx/conf/http.conf:/etc/nginx/conf/http.conf:ro
+      - ./docker_nginx/conf/rtmp.conf:/etc/nginx/conf/rtmp.conf:ro
+      - ./files/static:/webapp/static
+      - ./files/media:/webapp/media
+      #- ./docker_nginx/uwsgi_params:/etc/nginx/uwsgi_params:ro
+    command: /bin/sh -c "/etc/nginx/sbin/nginx -g 'daemon off;'"
+   
+    #networks:
+    #  - web_net   
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/24
+

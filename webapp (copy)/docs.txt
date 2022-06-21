@@ -1,0 +1,17 @@
+settings.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
+
+To reveal the true problem, open django/apps/registry.py and around line 80, replace:
+
+raise RuntimeError("populate() isn't reentrant")
+with:
+self.app_configs = {}

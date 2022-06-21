@@ -1,0 +1,10 @@
+psycopg2-binary>=2.8
+opencv-python>=4.5.0
+matplotlib>=3.3.0
+numpy>=1.18.0
+pandas
+scikit-learn
+scikit-image
+tqdm
+jupyter
+jupyterlab

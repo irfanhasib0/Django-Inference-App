@@ -1,4 +1,0 @@
-!#/bin/bash
-ffmpeg -re -i /webapp/media/video.mp4 -vcodec libx264 -vprofile baseline -g 30 -acodec aac -strict -2 -f flv rtmp://localhost/hls/stream
-ffmpeg -re -I /webapp/media/video.mp4 -vcodec copy -loop -1 -c:a aac -b:a 160k -ar 44100 -strict -2 -f flv rtmp:0.0.0.0/live/bbb
-
