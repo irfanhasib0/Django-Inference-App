@@ -6,15 +6,36 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-restricted-globals */
 
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import './App.css';
 import axios from 'axios';
 import { Button, Container, Card, Row, Col } from 'react-bootstrap'
 //import {RichTextEditor} from 'components/editor/src'
 import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import { convertFromRaw, AtomicBlockUtils, convertToRaw, EditorState } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import CanvasDraw from "react-canvas-draw";
+import rough from "roughjs/bundled/rough.esm";
+//import DrawApp from './draw/src/RichDrawAreaLine';
 
+const CanvasBlock = ({ contentState, block, blockProps: { onSave, content }, ...rest }) => {
+  const canvas = useRef(null);
+  return <div
+    className="canvas-container"
+    onMouseUp={() => {
+      const entity = block.getEntityAt(0);
+      onSave(contentState.replaceEntityData(entity, { content: canvas.current.getSaveData() }))
+    }}
+  >
+    <CanvasDraw
+      canvasWidth={350}
+      canvasHeight={300}
+      brushRadious={3}
+      saveData={content}
+      ref={canvas}
+    />
+  </div>
+};
 
 class App_1 extends Component {
   constructor(props) {
@@ -30,14 +51,17 @@ class App_1 extends Component {
   // *********************************************************************//
   loadContent = (content) =>{
   //const content = window.localStorage.getItem('content');
-  console.log('loading ...',content)
+  console.log('loading ...')
   if (content) {
-    this.setState({editorState : EditorState.createWithContent(convertFromRaw(JSON.parse(content)))})
+    console.log(content)
+    content = JSON.parse(content)
+    this.setState({editorState : EditorState.createWithContent(convertFromRaw(content))})
     //this.handle
   } else {
     this.setState({editorState : EditorState.createEmpty()})
   }
   }
+  
   
   // *********************************************************************//
   handleEditorChange = (editorState) => {
@@ -47,7 +71,7 @@ class App_1 extends Component {
     });
     
     const contentState    =  editorState.getCurrentContent();
-    console.log(contentState.getEntityMap())
+    //console.log(contentState.getEntityMap())
     const rawContentState =  convertToRaw(contentState);
     //this.saveContent(rawContentState)
     this.showText(rawContentState)
@@ -59,6 +83,7 @@ class App_1 extends Component {
   // *********************************************************************//
   saveContent = () => {
   //window.localStorage.setItem('content', JSON.stringify(rawContentState));
+  console.log(this.state)
   axios.post(`/api/update`, this.state).then(() => { alert('success post') })
   //document.location.reload();
   }
@@ -119,18 +144,79 @@ class App_1 extends Component {
     </div>
   );
   };
+  
+  insertCanvas = () => {
+    const editorState = this.state.editorState;
+    let content = editorState.getCurrentContent();
+
+    content = content.createEntity(
+      'CANVAS',
+      'IMMUTABLE',
+      { content: '' }
+    )
+
+    const entityKey = content.getLastCreatedEntityKey();
+
+    this.setState({
+      editorState: AtomicBlockUtils.insertAtomicBlock(
+        editorState,
+        entityKey,
+        ' ',
+      ),
+    });
+  };
+
+  saveCanvas = (content) => {
+    this.setState({
+      editorState: EditorState.push(
+        this.state.editorState,
+        content
+      )
+    });
+  };
+
+  blockRendererFn = block => {
+    const editorState = this.state.editorState;
+    if (editorState){
+	    console.log(editorState)
+	    const content = editorState.getCurrentContent();
+
+	    if (block.getType() === 'atomic') {
+	      const entityKey = block.getEntityAt(0);
+	      const entity = content.getEntity(entityKey);
+	      console.log('entity',entity)
+	      const entityData = entity.getData() || { content: '' }
+	      if (entity != null && entity.getType() === 'CANVAS') {
+		return {
+		  component: CanvasBlock,
+		  props: {
+		    onSave: this.saveCanvas,
+		    ...entityData
+		  }
+		}
+	      }
+	    }
+	 }
+    };
+
+
   //<div class="row">
   //<input name='setBookName' placeholder={this.state.title} onChange={this.handleChange} />
   //<label htmlFor="text"> {this.state.title} </label>
   //<Button className='m-2' onClick={() => { this.renameit(0) }}>Rename</Button>
   //</div>
+  //
   render() {
     
     //let editorState = this.state.editorState;
     return (
             <React.Fragment>
-            <Editor editorState={this.state.editorState} editorClassName={this.state.title}  id="text" rows="5" cols="30" class="note" onEditorStateChange={this.handleEditorChange} >
+            <Editor editorClassName={this.state.title}  id="text" rows="5" cols="30" class="note" 
+            onEditorStateChange={this.handleEditorChange}
+            editorState={this.state.editorState}
+            blockRendererFn={this.blockRendererFn} >
             </Editor>
+            <button onClick={this.insertCanvas}>&#10000;</button>
             <Button className='m-2' onClick={() => { this.saveContent() }}>Save</Button>
             <Button onClick={() => { this.delete(0) }}>Delete</Button>
             </React.Fragment>

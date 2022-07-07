@@ -1,0 +1,18 @@
+{
+  "name": "html-to-draftjs",
+  "version": "1.5.0",
+  "main": "dist/html-to-draftjs.js",
+  "peerDependencies": {
+    "draft-js": "^0.10.x || ^0.11.x",
+    "immutable": "3.x.x || 4.x.x"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack --mode production --config config/webpack.config.js"
+  },
+  "author": "Jyoti Puri",
+  "license": "MIT"
+}

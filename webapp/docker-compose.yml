@@ -88,6 +88,7 @@ services:
     volumes:
       - /app/node_modules
       - ./app_server:/app
+      - ./app_server/files:/app_data/files
     environment:
       MYSQL_DATABASE: books
       MYSQL_USER: MYSQL_USER

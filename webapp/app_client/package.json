@@ -14,7 +14,13 @@
     "react-scripts": "4.0.3",
     "web-vitals": "^1.1.2",
     "perfect-freehand": "^0.4.10",
-    "roughjs": "^4.3.1"
+    "roughjs": "^4.3.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.18",
+    "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "draft-js": "^0.10.5",
+    "draft-js-custom-styles": "^2.1.1",
+    "styled-components": "^4.2.1"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
@@ -29,12 +35,12 @@
     ]
   },
   "browserslist": {
-    "production": [
+    "development": [
       ">0.2%",
       "not dead",
       "not op_mini all"
     ],
-    "development": [
+    "production": [
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
