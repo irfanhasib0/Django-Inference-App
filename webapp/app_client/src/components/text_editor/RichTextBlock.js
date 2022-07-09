@@ -73,12 +73,15 @@ class TextBlock extends Component {
   constructor(props) {
     super(props)
       this.state = {
-        id: props.id,
+        user:props.user,
+        topic:props.topic,
+        section: props.section,
         title: '',
         content: '',
         editorState: EditorState.createEmpty(),
         entid : -1
       }
+     //this.submit();
   }
   // *********************************************************************//
   loadContent = (content) =>{
@@ -126,14 +129,17 @@ class TextBlock extends Component {
   // *********************************************************************//
   componentDidMount() {
       this.submit();
-        axios.get(`/api/getid/${this.state.id}`)
+      console.log('Get id',`/api/getid?user=${this.state.user}&topic=${this.state.topic}&section=${this.state.section}`)
+        axios.get(`/api/getid?user=${this.state.user}&topic=${this.state.topic}&section=${this.state.section}`)
       .then((response) => {
+        console.log('Get id : ',response.data)
         this.loadContent(response.data[0].content);
       })
   }
   
   // *********************************************************************//
   submit = () => {
+    console.log('Submit request with paylad',this.state)
     axios.post('/api/insert', this.state)
       .then(() => { alert('success post') })
     console.log(this.state)
@@ -242,7 +248,7 @@ class TextBlock extends Component {
     //let editorState = this.state.editorState;
     return (
             <>
-            <Card style={{height: '480px' }}>
+            <Card style={{height: '480px', marginTop : '10px', marginBottom : '10px' }}>
             <Editor editorClassName={this.state.title}  id="text" rows="10" cols="30" class="note" 
             onEditorStateChange={this.handleEditorChange}
             editorState={this.state.editorState}
@@ -259,9 +265,9 @@ class TextBlock extends Component {
             </Editor>
             </Card>
             <div style={{height: '40px' }}>
-            <Button style={{width : '40px', padding : '5px'}} onClick={this.insertCanvas}>&#10000;</Button>{' '}
+            <Button style={{marginLeft : '10px', width : '40px', padding : '5px'  }} onClick={this.insertCanvas}>&#10000;</Button>{' '}
             <Button style={{width : '100px', padding : '5px' }} onClick={() => { this.saveContent() }}>Save</Button>{' '}
-            <Button style={{width : '100px', padding : '5px'}} onClick={() => { this.delete(this.state.id) }}>Delete</Button>{' '}
+            <Button style={{width : '100px', padding : '5px' }} onClick={() => { this.delete(this.state.id) }}>Delete</Button>{' '}
             </div>
             </>
             

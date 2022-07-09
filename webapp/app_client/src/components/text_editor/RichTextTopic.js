@@ -8,7 +8,7 @@ import axios from 'axios'
 class EditorSmp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {editorState: props.state, id: props.id};
+    this.state = {editorState: props.state, user: props.user, topic: props.topic, section: props.section};
     this.onChange = editorState => this.setState({editorState});
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
   }
@@ -27,7 +27,9 @@ class EditorSmp extends React.Component {
   render() {
     return (
       <TextBlock
-        id={this.state.id}
+        user={this.state.user}
+        topic={this.state.topic}
+        section={this.state.section}
         editorState={this.state.editorState}
         onChange={this.onChange}
         handleKeyCommand={this.handleKeyCommand}
@@ -39,46 +41,47 @@ class EditorSmp extends React.Component {
 class TextTopic extends React.Component {
     constructor(props){
            super(props);
-           this.state = {notes:[],nextId:0}
+           this.state = {notes:[],nextId:0, user:props.user,topic:props.topic}
     }
     
     
     addBlock = () =>
     {
     let notes = this.state.notes
-    notes.push({'id': parseInt(this.state.nextId)})
-    this.setState({notes:notes,nextId:parseInt(this.state.nextId+1)})
-    //document.location.reload()
+    notes.push({'user': this.state.user, 'topic': this.state.topic, 'section': parseInt(this.state.nextId)})
+    this.setState({notes:notes,nextId:parseInt(this.state.nextId)+1})
+    document.location.reload()
     }
     
     saveResponse(response) {
        let notes = []
        for(let res of response.data){
-       notes.push({'id': parseInt(res.id)})
-       this.setState({notes:notes,nextId:parseInt(res.id)+1})
+       notes.push({'user':res.user, 'topic': res.topic, 'section': parseInt(res.section)})
+       this.setState({notes:notes,nextId:parseInt(res.section)+1})
       }
       }
       
     async componentDidMount() {
-       const resp = await axios.get(`/api/getids`)//.then(this.saveResponse(response))
+       const resp = await axios.get(`/api/getids?user=${this.state.user}&topic=${this.state.topic}`)//.then(this.saveResponse(response))
        this.saveResponse(resp)
       }
       
       
     render() {
-         console.log('render notes',this.state.notes)
+         console.log('Render notes',this.state.notes)
          let blocks = this.state.notes.map((item,index)=>{
+         console.log('Item id : ',item.section)
          return (
          <>
-         <EditorSmp id = {item.id}/>
+         <EditorSmp user = {item.user} topic = {item.topic} section = {item.section}/>
          </>
          )
          });
          
          return(
          <>
-         <Button style={{width : '40px', padding : '5px'}} onClick={this.addBlock}>&#10000;</Button>{' '}
          {blocks}
+         <Button style={{width : '60px', padding : '5px', marginLeft : '10px', marginBottom : '10px'}} onClick={this.addBlock}> + </Button>{' '}
          </>)
         };
    }

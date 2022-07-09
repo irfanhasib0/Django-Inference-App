@@ -70,7 +70,7 @@ services:
     ports:
       - "9906:3306"
     environment:
-      MYSQL_DATABASE: books
+      MYSQL_DATABASE: notes
       MYSQL_USER: MYSQL_USER
       MYSQL_PASSWORD: MYSQL_PASSWORD
       MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
@@ -90,7 +90,7 @@ services:
       - ./app_server:/app
       - ./app_server/files:/app_data/files
     environment:
-      MYSQL_DATABASE: books
+      MYSQL_DATABASE: notes
       MYSQL_USER: MYSQL_USER
       MYSQL_PASSWORD: MYSQL_PASSWORD
       MYSQL_HOST_IP: mysql_db

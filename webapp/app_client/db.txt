@@ -1,0 +1,5 @@
+mysql -u MYSQL_USER -pMYSQL_PASSWORD books
+SELECT * FROM user_database WHERE user = user_1 AND topic = topic_1 AND section = 0
+INSERT INTO user_database (user, topic, section, title, content) VALUES (99, '', '', '', '');
+
+

@@ -12,5 +12,6 @@ RUN npm install --save ./libs/html-to-draftjs
 #RUN npm install --save react-draft-wysiwyg draft-js react-draft-wysiwyg-a
 RUN npm install --save react-canvas-draw
 RUN npm install --save react-sortablejs sortablejs
+RUN npm install --save sass
 RUN npm i
 CMD ["npm", "run", "start"]
