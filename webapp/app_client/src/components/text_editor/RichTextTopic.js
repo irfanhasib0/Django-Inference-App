@@ -56,11 +56,13 @@ class TextTopic extends React.Component {
     saveResponse(response) {
        let notes = []
        for(let res of response.data){
+       //if (res.user !== '...') {
        notes.push({'user':res.user, 'topic': res.topic, 'section': parseInt(res.section)})
        this.setState({notes:notes,nextId:parseInt(res.section)+1})
+       }
+      //}
       }
-      }
-      
+    
     async componentDidMount() {
        const resp = await axios.get(`/api/getids?user=${this.state.user}&topic=${this.state.topic}`)//.then(this.saveResponse(response))
        this.saveResponse(resp)
@@ -68,12 +70,12 @@ class TextTopic extends React.Component {
       
       
     render() {
-         console.log('Render notes',this.state.notes)
+         console.log('Render notes',this.state.user,this.state.notes)
          let blocks = this.state.notes.map((item,index)=>{
          console.log('Item id : ',item.section)
          return (
          <>
-         <EditorSmp user = {item.user} topic = {item.topic} section = {item.section}/>
+         <EditorSmp user = {this.state.user} topic = {item.topic} section = {item.section}/>
          </>
          )
          });

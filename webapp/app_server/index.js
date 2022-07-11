@@ -13,7 +13,7 @@ const db = mysql.createPool({
 })
 
 
-const createDbQuery = "CREATE TABLE IF NOT EXISTS `user_database` (\
+const Query = "CREATE TABLE IF NOT EXISTS `user_database` (\
   `index` int(11) NOT NULL AUTO_INCREMENT,\
   `user` varchar(30) NOT NULL,\
   `topic` varchar(20) NOT NULL,\
@@ -63,14 +63,11 @@ for(let i=0;i<sec*10000;i++){
     }
     }
 }
-
-async function createDb(Query){
-sleep(10)
-let result = awaitQuery(Query)
-console.log('Created db ...',result)
-}
-createDb(createDbQuery);
-
+db.query(Query,(err, result) => {
+    sleep(1)
+    console.log('Created db',result)
+  })
+  
 // home page
 app.get('/', (req, res) => {
   res.send('Hi There')
