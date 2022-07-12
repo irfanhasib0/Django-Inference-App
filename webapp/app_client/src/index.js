@@ -13,6 +13,7 @@ import './components/sidebar/scss/styles.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaTachometerAlt, FaRegEdit, FaGem, FaList, FaRegLaughWink, FaHeart, FaBook, FaUserCircle } from 'react-icons/fa';
 import {BsJournalRichtext, BsBook, BsStack} from 'react-icons/bs';
+import {AiOutlineMail} from 'react-icons/ai';
 
 function Header(props){
         return (
@@ -83,7 +84,7 @@ const loadMyAsyncData = () => new Promise((resolve, reject) => {
   setTimeout(() => resolve(
     getTopics()
   ), timeout)
-  setTime(2000)
+  setTime(500)
   
 })
  
@@ -122,11 +123,11 @@ return (
   <>
   <Row>
   <Col xs={3}>
-  <ProSidebar height='1000px'> 
+  <ProSidebar> 
   <SidebarHeader style = {{marginTop : '10px' , marginLeft : '10px'}}>
   <h5><FaUserCircle/> {user}</h5>
   </SidebarHeader>
-  <SidebarContent  style = {{marginTop : '10px' , marginBottom : '300px'}}>
+  <SidebarContent  style = {{marginTop : '10px' , marginBottom : '250px'}}>
      <Menu iconShape="circle">
        <SubMenu defaultOpen={true} title={'Notebooks'} icon={<BsStack />} suffix={<span className="badge red">{String(topics.length)}</span>}>
       {topic_items}
@@ -137,7 +138,7 @@ return (
   </SidebarContent>
   <SidebarFooter>
   <div style = {{padding : '0px', marginTop : '10px' , marginBottom : '10px'}} >
-  {'             iNoteServer           '}
+ <AiOutlineMail/> {'irfanhasib.me@gmail.com'}
   </div>
   </SidebarFooter>
   </ProSidebar>
