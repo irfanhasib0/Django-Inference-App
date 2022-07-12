@@ -4,42 +4,41 @@ import axios from 'axios'
 import TextTopic from './components/text_editor/RichTextTopic';
 import DrawApp from './components/draw_editor/RichDrawArea';
 import {Container, Card, Row, Col, Button } from 'react-bootstrap'
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
-import Note from './note'
-import { ProSidebar, Menu, MenuItem, SubMenu, SidebarContent, Sidebar } from './components/sidebar';
+import { ProSidebar, Menu, MenuItem, SubMenu, SidebarContent, SidebarHeader, SidebarFooter, Sidebar } from './components/sidebar';
 import './components/sidebar/scss/styles.scss';
-import './draw/src/index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
+import { FaTachometerAlt, FaRegEdit, FaGem, FaList, FaRegLaughWink, FaHeart, FaBook, FaUserCircle } from 'react-icons/fa';
+import {BsJournalRichtext, BsBook, BsStack} from 'react-icons/bs';
 
-
-
-
-//async componentDidMount() {
-//       const resp = await axios.get(`/api/get_topics?user=${this.state.user}&topic=${this.state.topic}`)//.then(this.saveResponse(response))
-//       this.saveResponse(resp)
-//      }
-class Users extends Component {
-      constructor(props){
-      super(props)
-      this.state = {users : [], setUser : props.setUser}
-      }
-      
-      async componentDidMount(){
-       const resp = await axios.get(`/api/get_users`)
-       let users = []
-       for (let elem of resp.data)
-       {      
-         users.push(elem.user)
-       }
-       this.setState({users:users})
-       this.state.setUser(users[0])
-      }
-      render(){
-      return (<>
-      <p> {this.state.users} </p>
-      </>)}
-      }
+function Header(props){
+        return (
+	<Navbar bg='gray'>
+	<Container>
+		<Navbar.Brand href="#home"> <BsBook/> {props.topic} </Navbar.Brand>
+		<Navbar.Toggle aria-controls="basic-navbar-nav" />
+		<Navbar.Collapse id="basic-navbar-nav">
+		  <Nav className="me-auto">
+		    <Nav.Link href="#home"><FaUserCircle/> {props.user}</Nav.Link>
+		    <NavDropdown title= "Editor" id="basic-nav-dropdown">
+		      <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+		      <NavDropdown.Item href="#action/3.2">
+		        Another action
+		      </NavDropdown.Item>
+		      <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+		      <NavDropdown.Divider />
+		      <NavDropdown.Item href="#action/3.4">
+		        Separated link
+		      </NavDropdown.Item>
+		    </NavDropdown>
+		  </Nav>
+		</Navbar.Collapse>
+	  </Container>
+	  </Navbar>)
+ }
 
 function Layout(props) {
 const [user,setUser]   = useState('...')
@@ -93,21 +92,20 @@ loadMyAsyncData ()
 })
 
 
+let textBlock = (<>{'loading ...'}</>)
 let topic_items = (<>
-<MenuItem icon={<FaGem />}> 
+<MenuItem icon={<BsBook />}> 
 {topic}
 </MenuItem>
 </>)
 
-let textBlock = (<>{'loading ...'}</>)
-
 if (user!=='...' & topic!=='...'){
 textBlock = (<TextTopic user={user} topic={topic} />)
 topic_items = topics.map((item,index)=>{
-//    <button>{item}</button>
+
 return(<>
-<MenuItem key={item} icon={<FaGem />}> 
-<Button variant='outline-secondary' style={{width : 'auto', height : 'auto', padding : '0px', marginBottom : '10px' }} onClick={()=>{window.localStorage.setItem('topic',item); document.location.reload()}} >{item}</Button>
+<MenuItem key={item} icon={<BsBook />}> 
+<Button variant='outline-secondary' style={{width : 'auto', height : '25px', padding : '0px', marginBottom : '10px' , marginLeft : '10px' }} onClick={()=>{window.localStorage.setItem('topic',item); document.location.reload()}} >{'# '+item+' .'}</Button>
 </MenuItem>
 </>)
 })
@@ -119,30 +117,34 @@ function createNewTopic(){
     axios.post('/api/insert', {'user':user,'topic':topicName,'section':0,'title':'','content':''})
       .then(() => { alert('success post') })
 }
-//
+
 return (
   <>
   <Row>
-  <Col xs={2}>
-  <ProSidebar> 
-  <p>{user}</p>
-  <SidebarContent>
+  <Col xs={3}>
+  <ProSidebar height='1000px'> 
+  <SidebarHeader style = {{marginTop : '10px' , marginLeft : '10px'}}>
+  <h5><FaUserCircle/> {user}</h5>
+  </SidebarHeader>
+  <SidebarContent  style = {{marginTop : '10px' , marginBottom : '300px'}}>
      <Menu iconShape="circle">
-       <SubMenu defaultOpen={true} title={'Topics'} icon={<FaTachometerAlt />} suffix={<span className="badge red">{String(topics.length)}</span>}>
+       <SubMenu defaultOpen={true} title={'Notebooks'} icon={<BsStack />} suffix={<span className="badge red">{String(topics.length)}</span>}>
       {topic_items}
       <textarea style={{width : '100px', height : '30px' , marginTop : '30px'}} onChange = {sendTopicName} placeholder={'topic name'}></textarea>
       <Button style={{width : '25px', height : '25px', padding : '0px', marginBottom : '10px' }} onClick={createNewTopic} >+</Button>
-      
       </SubMenu>
-      
      </Menu>
   </SidebarContent>
+  <SidebarFooter>
+  <div style = {{padding : '0px', marginTop : '10px' , marginBottom : '10px'}} >
+  {'             iNoteServer           '}
+  </div>
+  </SidebarFooter>
   </ProSidebar>
   </Col>
+  
   <Col xs={"auto"} style={{marginLeft : '0px'}}>
-  <div background-color ="blue" style={{marginTop : '0px', marginBottom : '0px'}}>
-  <h3 style={{"color":"cyan", "background-color":"white"}}> Notebook {user} </h3>
-  </div>
+  <Header user={user} topic={topic}/>
   {textBlock}
   </Col>
   </Row>

@@ -9,7 +9,7 @@
 import React, { Component, useRef } from 'react';
 import './RichTextArea.css';
 import axios from 'axios';
-import { Button, Container, Card} from 'react-bootstrap'
+import { Button, IconButton, Container, Card} from 'react-bootstrap'
 import { Editor } from 'react-draft-wysiwyg-local-a';
 import 'react-draft-wysiwyg-local-a/dist/react-draft-wysiwyg.css';
 import { convertFromRaw, AtomicBlock, AtomicBlockUtils, convertToRaw, EditorState, Modifier } from 'draft-js';
@@ -17,6 +17,7 @@ import CanvasDraw from "react-canvas-draw";
 import rough from "roughjs/bundled/rough.esm";
 import DrawApp from './RichDrawRender';
 import PropTypes from 'prop-types';
+import { FaRegEdit, FaSave, FaTrashAlt } from 'react-icons/fa';
 
 class CustomOption extends Component {
   static propTypes = {
@@ -79,19 +80,21 @@ class TextBlock extends Component {
         title: '',
         content: '',
         editorState: EditorState.createEmpty(),
-        entid : -1
+        entid : -1,
+        toolbarHidden: true,
+        bottomToolbarHidden: true,
+        clicked:false,
+        readOnly:false
       }
-     //this.submit();
+      this.setDomEditorRef = ref => this.domEditor = ref;
   }
   // *********************************************************************//
   loadContent = (content) =>{
-  //const content = window.localStorage.getItem('content');
   console.log('loading ...')
   if (content) {
     console.log(content)
     content = JSON.parse(content)
     this.setState({editorState : EditorState.createWithContent(convertFromRaw(content))})
-    //this.handle
   } else {
     this.setState({editorState : EditorState.createEmpty()})
   }
@@ -107,7 +110,7 @@ class TextBlock extends Component {
     
     const contentState    =  editorState.getCurrentContent();
     const rawContentState =  convertToRaw(contentState);
-    this.showText(rawContentState)
+    //this.showText(rawContentState)
     this.setState({content : JSON.stringify(rawContentState)})
     
   }
@@ -115,9 +118,10 @@ class TextBlock extends Component {
   // *********************************************************************//
   saveContent = () => {
   //window.localStorage.setItem('content', JSON.stringify(rawContentState));
-  console.log(this.state)
+  console.log("Saving ...")
   axios.post(`/api/update`, this.state).then(() => { alert('success post') })
-  document.location.reload();
+  this.setState({clicked:true})
+  //document.location.reload();
   }
   
   // *********************************************************************//
@@ -135,15 +139,25 @@ class TextBlock extends Component {
         console.log('Get id : ',response.data)
         this.loadContent(response.data[0].content);
       })
+      if (this.state.section===0){this.domEditor.focusEditor()}
+      
+  }
+  //*************************************************************************
+  getPayload = () => {
+  let payload = {  'user'    : this.state.user,
+                   'topic'   : this.state.topic,
+                   'section' : this.state.section,
+                   'title'   : this.state.title,
+                   'content' : this.state.content}
+   return payload
   }
   
   // *********************************************************************//
   submit = () => {
-    console.log('Submit request with paylad',this.state)
-    axios.post('/api/insert', this.state)
-      .then(() => { alert('success post') })
+    let payload = this.getPayload()
+    console.log('Submit request with paylad',payload)
+    axios.post('/api/insert', payload).then(() => { alert('success post') })
     console.log(this.state)
-    //document.location.reload();
   }
   
   // *********************************************************************//
@@ -151,20 +165,24 @@ class TextBlock extends Component {
   
   }
   
+  
+  // *********************************************************************//
+  update = (id) => {
+    let payload = this.getPayload()
+    console.log('updating with data : ',payload)
+    axios.post(`/api/update`, payload)
+    document.location.reload();
+  }
+  
   // *********************************************************************//
   delete = (id) => {
     if (confirm("Do you want to delete? ")) {
       axios.delete(`/api/delete/${id}`)
+      this.setState({clicked:true})
       document.location.reload()
     }
   }
   
-  // *********************************************************************//
-  update = (id) => {
-    console.log('update',id,this.state)
-    axios.post(`/api/update`, this.state)
-    document.location.reload();
-  }
    
   // *********************************************************************// 
   textAreaForm = () => {
@@ -180,6 +198,7 @@ class TextBlock extends Component {
   );
   };
   
+  // ***************************************************************************
   insertCanvas = () => {
     const editorState = this.state.editorState;
     let content = editorState.getCurrentContent();
@@ -202,7 +221,7 @@ class TextBlock extends Component {
     });
     console.log('eid...',this.state.entid)
   };
-
+  
   saveCanvas = (content) => {
     this.setState({
       editorState: EditorState.push(
@@ -235,25 +254,48 @@ class TextBlock extends Component {
 	    }
 	 }
     };
-
-
-  //<div class="row">
-  //<input name='setBookName' placeholder={this.state.title} onChange={this.handleChange} />
-  //<label htmlFor="text"> {this.state.title} </label>
-  //<Button className='m-2' onClick={() => { this.renameit(0) }}>Rename</Button>
-  //</div>
-  //
+  
+  onEditCallback = () => {
+  //this.domEditor.focusEditor()
+  //this.setState({toolbarHidden : false})
+  //this.setState({bottomToolbarHidden : false})
+  }
+  
+  onFocusCallback= () => {
+  this.setState({toolbarHidden : false})
+  this.setState({bottomToolbarHidden : false})
+  }
+  
+  onBlurCallback= () => {
+  setTimeout(()=>{
+  this.setState({toolbarHidden : true})
+  if (this.state.clicked==false)
+      {
+	  this.setState({
+	  bottomToolbarHidden : true,
+	  })
+      }
+  else{
+  this.setState({
+          bottomToolbarHidden : false,
+	  clicked : false,
+	  })
+  }
+  },200)
+  }
+  
   render() {
-    
-    //let editorState = this.state.editorState;
+    //<Button variant="outlined-primary" style={{marginLeft : '10px', width : 'auto', padding : '2px'  }} onClick={this.onEditCallback()}>{<FaRegEdit/>}</Button>{' '}
     return (
             <>
-            <Card style={{height: '480px', marginTop : '10px', marginBottom : '10px' }}>
-            <Editor editorClassName={this.state.title}  id="text" rows="10" cols="30" class="note" 
+            <Card style={{height: 'auto', marginTop : '10px', marginBottom : '10px' }}>
+            <Editor spellCheck={true} readOnly={this.state.readOnly} ref={this.setDomEditorRef}  toolbarHidden={this.state.toolbarHidden} editorClassName={this.state.title}  id="text" rows="10" cols="30" class="note" 
             onEditorStateChange={this.handleEditorChange}
             editorState={this.state.editorState}
             blockRendererFn={this.blockRendererFn}
             toolbarCustomButtons={[<CustomOption />]}
+            onFocus={this.onFocusCallback}
+            onBlur={this.onBlurCallback}
             toolbar={{
             options: ['inline', 'blockType', 'fontSize', 'fontFamily', 'list', 'textAlign', 'colorPicker', 'link', 'emoji', 'image', 'history'],
             list: { inDropdown: true },
@@ -264,11 +306,12 @@ class TextBlock extends Component {
             }} >
             </Editor>
             </Card>
-            <div style={{height: '40px' }}>
-            <Button style={{marginLeft : '10px', width : '40px', padding : '5px'  }} onClick={this.insertCanvas}>&#10000;</Button>{' '}
-            <Button style={{width : '100px', padding : '5px' }} onClick={() => { this.saveContent() }}>Save</Button>{' '}
-            <Button style={{width : '100px', padding : '5px' }} onClick={() => { this.delete(this.state.id) }}>Delete</Button>{' '}
-            </div>
+            {(this.state.bottomToolbarHidden) ? (<></>) : 
+		    (<div style={{height: '40px' }}>
+		    <Button variant="outlined-success" style={{width : 'auto', padding : '2px' }} onClick={() => { this.saveContent() }}>{<FaSave/>}</Button>{' '}
+		    <Button variant="outlined-danger" style={{width : 'auto', padding : '2px' }}  onClick={() => { this.delete(this.state.id) }}>{<FaTrashAlt/>}</Button>{' '}
+		    </div>)
+            }
             </>
             
     );

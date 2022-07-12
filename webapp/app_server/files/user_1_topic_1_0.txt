@@ -1,1 +1,1 @@
-{"blocks":[{"key":"1h9ri","text":"ABC , DEF","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}
+{"blocks":[{"key":"ad0ea","text":"Definition : ","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":13,"style":"BOLD"},{"offset":0,"length":13,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"4d4bh","text":"Topic 1 is very interesting with lots of application.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}

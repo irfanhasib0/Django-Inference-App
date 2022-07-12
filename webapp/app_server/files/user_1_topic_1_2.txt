@@ -1,1 +1,1 @@
-{"blocks":[{"key":"b2a2h","text":"efg","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}
+{"blocks":[{"key":"7m2ca","text":"Method 2:","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":9,"style":"BOLD"},{"offset":0,"length":9,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"e8869","text":"It is little slow but quite effective.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}
