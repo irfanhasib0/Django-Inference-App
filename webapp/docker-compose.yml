@@ -1,39 +1,39 @@
 version: "3.3"
   
 services:
-  db:
-    container_name: db
-    image: postgres
-    volumes:
-      #- ./data/db:/var/lib/postgresql/data
-      - /home/hasib/db:/var/lib/postgresql/data
-    environment:
-      #- POSTGRES_HOST=0.0.0.0
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
-    #networks:
-    #  - web
+  # db:
+  #   container_name: db
+  #   image: postgres
+  #   volumes:
+  #     #- ./data/db:/var/lib/postgresql/data
+  #     - /home/hasib/db:/var/lib/postgresql/data
+  #   environment:
+  #     #- POSTGRES_HOST=0.0.0.0
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   ports:
+  #     - "5432:5432"
+  #   #networks:
+  #   #  - web
     
   
-  web:
-    container_name: web
-    build: ./docker_web
-    #command: python manage.py runserver 0.0.0.0:9002
-    command: uwsgi --socket :9002 --module webapp.wsgi --uid 1000 --gid 2000
-    volumes:
-      - ./:/code
-      - ./:/data
-      - ./docker_web/registry.py:/usr/local/lib/python3.8/site-packages/django/apps/registry.py:ro
-    ports:
-      - "9002:9002"
-      - "9005:9005"
-    depends_on:
-      - db
-    #networks:
-    #  - web_net
+  # web:
+  #   container_name: web
+  #   build: ./docker_web
+  #   #command: python manage.py runserver 0.0.0.0:9002
+  #   command: uwsgi --socket :9002 --module webapp.wsgi --uid 1000 --gid 2000
+  #   volumes:
+  #     - ./:/code
+  #     - ./:/data
+  #     - ./docker_web/registry.py:/usr/local/lib/python3.8/site-packages/django/apps/registry.py:ro
+  #   ports:
+  #     - "9002:9002"
+  #     - "9005:9005"
+  #   depends_on:
+  #     - db
+  #   #networks:
+  #   #  - web_net
       
   #sever:
   #  container_name: runner
@@ -115,7 +115,6 @@ services:
     build : ./docker_nginx
     depends_on:
       - api
-      - web
     environment:
       CVAT_HOST: localhost
     ports:

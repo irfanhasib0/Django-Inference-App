@@ -9,11 +9,12 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import { ProSidebar, Menu, MenuItem, SubMenu, SidebarContent, SidebarHeader, SidebarFooter, Sidebar } from './components/sidebar';
+import Login  from './components/login/form';
 import './components/sidebar/scss/styles.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaTachometerAlt, FaRegEdit, FaTrashAlt, FaGem, FaList, FaRegLaughWink, FaHeart, FaBook, FaUserCircle } from 'react-icons/fa';
 import {BsJournalRichtext, BsBook, BsStack} from 'react-icons/bs';
-import {AiOutlineMail} from 'react-icons/ai';
+import {AiOutlineMail, AiOutlineLogin, AiOutlineLogout} from 'react-icons/ai';
 
 function Header(props){
         return (
@@ -75,16 +76,19 @@ async function getTopics(){
        {      
          topics.push(elem.topic)
        }
-     if (window.localStorage.getItem('topic')){
-     setTopic(window.localStorage.getItem('topic'))
-     //window.localStorage.removeItem('topic')
+     const loc_topic = window.localStorage.getItem('topic')
+     if (loc_topic){
+     setTopic(loc_topic)
+     }
+     else if(topics.length===0) 
+     {
+      topics.push('topic_1')
+      setTopic('topic_1')
      }
      else {
-     setTopic(topics[0])
-     }
-     //topics.push('...')
+      setTopic(topics[0])
+      }
      setTopics(topics)
-     return topics[0]
      }
 
 const renameTopic = () => {
@@ -106,9 +110,11 @@ const deleteTopic = () => {
 }
 
 const loadMyAsyncData = () => new Promise((resolve, reject) => {
+  if (window.localStorage.getItem('token')){
   setTimeout(() => resolve(
-    getUsers()
+    getUser()
   ), timeout)
+  }
   setTimeout(() => resolve(
     getTopics()
   ), timeout)
@@ -152,6 +158,23 @@ function createNewUser(){
       .then(() => { alert('success post') })
     document.location.reload()
 }
+
+function logout(){
+  window.localStorage.clear() 
+  document.location.reload()
+}
+
+const getUser = async () => {
+let token = window.localStorage.getItem('token')
+if (token){
+const result = await axios.post('/api/get_user',{'token':token})
+if (result.data[0].user) {setUser(result.data[0].user)}
+}
+}
+
+//if(!token) {
+    //return <Login setToken={setToken} setUser={setUser} />
+//}
 //<textarea style={{width : '100px', height : '30px' , marginTop : '30px'}} onChange = {sendUserName} placeholder={'user name'}></textarea>
 //<Button style={{width : '25px', height : '25px', padding : '0px', marginBottom : '10px' }} onClick={createNewUser} >+</Button>
 return (
@@ -160,7 +183,13 @@ return (
   <Col xs={3}>
   <ProSidebar> 
   <SidebarHeader style = {{marginTop : '10px' , marginLeft : '10px'}}>
-  <h5><FaUserCircle/> {user}</h5>
+  <h5><FaUserCircle/> {user} 
+  {user==='...' ? <></> : <Button variant='outline-info' style={{width : 'auto', height : 'auto', padding : '0px', marginBottom : '5px' }} onClick={logout} ><AiOutlineLogout/></Button>
+}
+</h5> 
+  {user==='...' ? <Login/> : <></>
+}
+
   </SidebarHeader>
   <SidebarContent  style = {{marginTop : '10px' , marginBottom : '250px'}}>
      <Menu iconShape="circle">
@@ -180,7 +209,6 @@ return (
   </Col>
   <Col xs={"auto"} style={{marginLeft : '0px'}}>
   <Header user={user} topic={topic} callbacks={{'renameTopic': renameTopic, 'deleteTopic' : deleteTopic}}/>
-  
   {textBlock}
   </Col>
   </Row>
