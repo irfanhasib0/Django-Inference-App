@@ -11,7 +11,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { ProSidebar, Menu, MenuItem, SubMenu, SidebarContent, SidebarHeader, SidebarFooter, Sidebar } from './components/sidebar';
 import './components/sidebar/scss/styles.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaTachometerAlt, FaRegEdit, FaGem, FaList, FaRegLaughWink, FaHeart, FaBook, FaUserCircle } from 'react-icons/fa';
+import { FaTachometerAlt, FaRegEdit, FaTrashAlt, FaGem, FaList, FaRegLaughWink, FaHeart, FaBook, FaUserCircle } from 'react-icons/fa';
 import {BsJournalRichtext, BsBook, BsStack} from 'react-icons/bs';
 import {AiOutlineMail} from 'react-icons/ai';
 
@@ -19,7 +19,10 @@ function Header(props){
         return (
 	<Navbar bg='gray'>
 	<Container>
-		<Navbar.Brand href="#home"> <BsBook/> {props.topic} </Navbar.Brand>
+		<Navbar.Brand href="#home"> <BsBook/> {props.topic} 
+    <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={props.callbacks.renameTopic} ><FaRegEdit/></Button>
+    <Button variant='outline-danger' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={props.callbacks.deleteTopic} ><FaTrashAlt/></Button>
+    </Navbar.Brand>
 		<Navbar.Toggle aria-controls="basic-navbar-nav" />
 		<Navbar.Collapse id="basic-navbar-nav">
 		  <Nav className="me-auto">
@@ -42,11 +45,12 @@ function Header(props){
  }
 
 function Layout(props) {
-const [user,setUser]   = useState('...')
-const [topic,setTopic] = useState('...')
-const [topics,setTopics] = useState(['...'])
+const [user,setUser]           = useState('...')
+const [topic,setTopic]         = useState('...')
+const [topics,setTopics]       = useState(['...'])
+const [userName,setUserName]   = useState('...')
 const [topicName,setTopicName] = useState('...')
-const [timeout,setTime] = useState(parseInt(500))
+const [timeout,setTime]        = useState(parseInt(500))
 
 async function getUsers(){
      let users = []
@@ -55,6 +59,11 @@ async function getUsers(){
        {      
          users.push(elem.user)
        }
+     if(users.length ===0)
+     {
+      createNewUser()
+     }
+       
      setUser(users[0])
      return users[0]
      }
@@ -68,15 +77,34 @@ async function getTopics(){
        }
      if (window.localStorage.getItem('topic')){
      setTopic(window.localStorage.getItem('topic'))
+     //window.localStorage.removeItem('topic')
      }
      else {
      setTopic(topics[0])
      }
-     topics.push('...')
+     //topics.push('...')
      setTopics(topics)
      return topics[0]
      }
-     
+
+const renameTopic = () => {
+  let name = window.prompt(topic,topic);
+  let payload = {'user': user , 'topic' : topic, 'save' : 'topic', 'name' : name};
+  console.log('saving data : ',payload)
+  axios.post(`/api/save`, payload)
+  window.localStorage.setItem('topic',name)
+  document.location.reload();
+  console.log('Rename : ',payload)
+}
+
+const deleteTopic = () => {
+  let payload = {'user': user, 'topic' : topic , 'section' : '*'}
+  if (window.confirm("Do you want to delete? ")) {
+    axios.post(`/api/delete`,payload)
+    document.location.reload()
+  }
+}
+
 const loadMyAsyncData = () => new Promise((resolve, reject) => {
   setTimeout(() => resolve(
     getUsers()
@@ -84,7 +112,7 @@ const loadMyAsyncData = () => new Promise((resolve, reject) => {
   setTimeout(() => resolve(
     getTopics()
   ), timeout)
-  setTime(500)
+  setTime(1000)
   
 })
  
@@ -110,7 +138,6 @@ return(<>
 </MenuItem>
 </>)
 })
-
 }
 
 function sendTopicName (event){ setTopicName(event.target.value) }
@@ -119,6 +146,14 @@ function createNewTopic(){
       .then(() => { alert('success post') })
 }
 
+function sendUserName (event){ setUserName(event.target.value) }
+function createNewUser(){
+    axios.post('/api/insert', {'user':'user_1','topic': 'topic_1','section':0,'title':'','content':''})
+      .then(() => { alert('success post') })
+    document.location.reload()
+}
+//<textarea style={{width : '100px', height : '30px' , marginTop : '30px'}} onChange = {sendUserName} placeholder={'user name'}></textarea>
+//<Button style={{width : '25px', height : '25px', padding : '0px', marginBottom : '10px' }} onClick={createNewUser} >+</Button>
 return (
   <>
   <Row>
@@ -129,7 +164,7 @@ return (
   </SidebarHeader>
   <SidebarContent  style = {{marginTop : '10px' , marginBottom : '250px'}}>
      <Menu iconShape="circle">
-       <SubMenu defaultOpen={true} title={'Notebooks'} icon={<BsStack />} suffix={<span className="badge red">{String(topics.length)}</span>}>
+      <SubMenu defaultOpen={true} title={'Notebooks'} icon={<BsStack />} suffix={<span className="badge red">{String(topics.length)}</span>}>
       {topic_items}
       <textarea style={{width : '100px', height : '30px' , marginTop : '30px'}} onChange = {sendTopicName} placeholder={'topic name'}></textarea>
       <Button style={{width : '25px', height : '25px', padding : '0px', marginBottom : '10px' }} onClick={createNewTopic} >+</Button>
@@ -143,9 +178,9 @@ return (
   </SidebarFooter>
   </ProSidebar>
   </Col>
-  
   <Col xs={"auto"} style={{marginLeft : '0px'}}>
-  <Header user={user} topic={topic}/>
+  <Header user={user} topic={topic} callbacks={{'renameTopic': renameTopic, 'deleteTopic' : deleteTopic}}/>
+  
   {textBlock}
   </Col>
   </Row>

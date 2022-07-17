@@ -75,7 +75,7 @@ class TextTopic extends React.Component {
           this.setState({isFocused:true})
          }
          
-         console.log('Render notes',this.state.user,this.state.notes)
+         console.log('Render notes',this.state.user, this.state.topic,this.state.notes)
          let blocks = this.state.notes.map((item,index)=>{
          console.log('Item id : ',item.section)
          return (

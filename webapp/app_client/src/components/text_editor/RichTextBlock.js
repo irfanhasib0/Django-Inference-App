@@ -116,13 +116,13 @@ class TextBlock extends Component {
   }
   
   // *********************************************************************//
-  saveContent = () => {
+  //saveContent = () => {
   //window.localStorage.setItem('content', JSON.stringify(rawContentState));
-  console.log("Saving ...")
-  axios.post(`/api/update`, this.state).then(() => { alert('success post') })
-  this.setState({clicked:true})
+  //console.log("Saving ...")
+  //axios.post(`/api/update`, this.state).then(() => { alert('success post') })
+  //this.setState({clicked:true})
   //document.location.reload();
-  }
+  //}
   
   // *********************************************************************//
   showText(rawContentState)
@@ -132,7 +132,7 @@ class TextBlock extends Component {
   
   // *********************************************************************//
   componentDidMount() {
-      this.submit();
+      this.insert();
       console.log('Get id',`/api/getid?user=${this.state.user}&topic=${this.state.topic}&section=${this.state.section}`)
         axios.get(`/api/getid?user=${this.state.user}&topic=${this.state.topic}&section=${this.state.section}`)
       .then((response) => {
@@ -153,7 +153,7 @@ class TextBlock extends Component {
   }
   
   // *********************************************************************//
-  submit = () => {
+  insert = () => {
     let payload = this.getPayload()
     console.log('Submit request with paylad',payload)
     axios.post('/api/insert', payload).then(() => { alert('success post') })
@@ -165,21 +165,24 @@ class TextBlock extends Component {
   
   }
   
-  
   // *********************************************************************//
-  update = (id) => {
+  save = () => {
     let payload = this.getPayload()
-    console.log('updating with data : ',payload)
-    axios.post(`/api/update`, payload)
-    document.location.reload();
+    payload['save'] = '';
+    payload['name'] = '';
+    console.log('saving data : ',payload)
+    axios.post(`/api/save`, payload)
+    //document.location.reload();
+    this.setState({clicked:true})
   }
   
   // *********************************************************************//
-  delete = (id) => {
+  delete = () => {
+    let payload = this.getPayload()
     if (confirm("Do you want to delete? ")) {
-      axios.delete(`/api/delete/${id}`)
+      axios.post(`/api/delete`,payload)
+      //document.location.reload()
       this.setState({clicked:true})
-      document.location.reload()
     }
   }
   
@@ -269,7 +272,7 @@ class TextBlock extends Component {
   onBlurCallback= () => {
   setTimeout(()=>{
   this.setState({toolbarHidden : true})
-  if (this.state.clicked==false)
+  if (this.state.clicked===false)
       {
 	  this.setState({
 	  bottomToolbarHidden : true,
@@ -308,8 +311,8 @@ class TextBlock extends Component {
             </Card>
             {(this.state.bottomToolbarHidden) ? (<></>) : 
 		    (<div style={{height: '40px' }}>
-		    <Button variant="outlined-success" style={{width : 'auto', padding : '2px' }} onClick={() => { this.saveContent() }}>{<FaSave/>}</Button>{' '}
-		    <Button variant="outlined-danger" style={{width : 'auto', padding : '2px' }}  onClick={() => { this.delete(this.state.id) }}>{<FaTrashAlt/>}</Button>{' '}
+		    <Button variant="outline-success" style={{width : 'auto', padding : '2px' }} onClick={() => { this.save() }}>{<FaSave/>}</Button>{' '}
+		    <Button variant="outline-danger" style={{width : 'auto', padding : '2px' }}  onClick={() => { this.delete() }}>{<FaTrashAlt/>}</Button>{' '}
 		    </div>)
             }
             </>

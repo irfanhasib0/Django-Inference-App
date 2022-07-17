@@ -117,7 +117,6 @@ app.get('/get_users', (req, res) => {
         });
 });
 
-
 // get all of the notes in the database
 app.get('/get_topics', (req, res) => {
   const user    = req.query.user
@@ -134,6 +133,7 @@ app.post("/insert", async (req, res) => {
   const section = req.body.section;
   const title   = req.body.title;
   const content = req.body.content;
+  
   const InsertQuery = "INSERT INTO user_database (user, topic, section, title, content) VALUES (?, ?, ?, ?, ?)";
   const CheckQuery  = "SELECT * FROM user_database WHERE user = ? AND topic = ? AND section = ?";
   let result = await awaitQuery(CheckQuery, [user, topic, section])
@@ -141,33 +141,62 @@ app.post("/insert", async (req, res) => {
   if (result.length === 0) {
      fs.writeFile('/app_data/files/'+String(user)+'_'+String(topic)+'_'+ String(section) + '.txt', String(content), error=>{console.log(error)})
      let result = await awaitQuery(InsertQuery, [user, topic ,parseInt(section), title, content])
-     console.log('Insert query for : ',user, topic, section, title, content,' Result : ',result)
-       
+     console.log('Insert query for : ',user, topic, section, title, content,' Result : ',result)     
 }
 });
   
 
 // delete a note section from the database
-app.delete("/delete/:section", (req, res) => {
-  const section = req.params.section;
-  const DeleteQuery = "DELETE FROM user_database WHERE section = ?";
-  db.query(DeleteQuery, section, (err, result) => {
-    if (err) console.log(err);
-  })
-})
-
-// update a book review
-app.post("/update",async (req, res) => {
+app.post("/delete",async (req, res) => {
   const user    = req.body.user;
   const topic   = req.body.topic;
   const section = req.body.section;
-  const title  = req.body.title;
-  const content = req.body.content;
-  const UpdateQuery = "UPDATE user_database SET title = ? , content = ? WHERE user = ? AND topic = ? AND section = ?";
-  console.log('api',title, content,user,topic,section)
-  fs.writeFile('/app_data/files/'+String(user)+'_'+String(topic)+'_'+ String(section) + '.txt', String(content) ,error=>{console.log(error)})
-  let result = await awaitQuery(UpdateQuery, [title, content.slice(0,50),user,topic,section])
-  console.log(result)
+  if (section==='*'){
+    const DeleteQuery = "DELETE FROM user_database WHERE user = ? AND topic = ?";
+    let result = await awaitQuery(DeleteQuery, [user,topic,section])
+    console.log('Delete : ',result)
+  }
+  else{
+    const DeleteQuery = "DELETE FROM user_database WHERE user = ? AND topic = ? AND section = ?";
+    let result = await awaitQuery(DeleteQuery, [user,topic,section])
+    console.log('Delete : ',result)
+  }
+  
+})
+
+// update a book review
+app.post("/save",async (req, res) => {
+  const user     = req.body.user;
+  const topic    = req.body.topic;
+  const section  = req.body.section;
+  const title    = req.body.title;
+  const content  = req.body.content;
+  const save     = req.body.save;
+  const name     = req.body.name; // title to rename user / topic
+  
+  if (save==='user'){
+    const UpdateQuery = "UPDATE user_database SET topic = ? WHERE user = ? AND topic = ?";
+    console.log('api',title, content,user,topic,section)
+    fs.rename('/app_data/files/'+String(user)+'_'+String(name)+'_'+ String(section) + '.txt', '/app_data/files/'+String(user)+'_'+String(topic)+'_'+ String(section) + '.txt')
+    let result = await awaitQuery(UpdateQuery, [name,user,topic])
+    console.log(result)
+    }
+
+  else if (save==='topic'){
+    const UpdateQuery = "UPDATE user_database SET topic = ? WHERE user = ? AND topic = ?";
+    console.log('api',user,topic,save,name)
+    fs.rename('/app_data/files/'+String(user)+'_'+String(name)+'_'+ String(section) + '.txt', '/app_data/files/'+String(user)+'_'+String(topic)+'_'+ String(section) + '.txt',()=>{console.log('rename done !')})
+    let result = await awaitQuery(UpdateQuery, [name,user,topic])
+    console.log(result)
+    }
+
+  else {
+    const UpdateQuery = "UPDATE user_database SET title = ? , content = ? WHERE user = ? AND topic = ? AND section = ?";
+    console.log('api',title, content,user,topic,section)
+    fs.writeFile('/app_data/files/'+String(user)+'_'+String(topic)+'_'+ String(section) + '.txt', String(content) ,error=>{console.log(error)})
+    let result = await awaitQuery(UpdateQuery, [title, content.slice(0,50),user,topic,section])
+    console.log(result)
+    }
 });
 
 // get all of the books in the database
