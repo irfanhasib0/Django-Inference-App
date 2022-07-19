@@ -1,0 +1,1 @@
+{"blocks":[{"key":"16s6p","text":"Method 3:","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":9,"style":"BOLD"},{"offset":0,"length":9,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"9osv","text":"Same as method 2.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}
