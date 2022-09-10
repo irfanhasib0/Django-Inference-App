@@ -1,0 +1,17 @@
+{
+  "name": "draftjs-utils",
+  "version": "0.10.3",
+  "description": "Collection of utility function for use with Draftjs.",
+  "main": "lib/draftjs-utils.js",
+  "scripts": {
+    "clean": "rimraf lib",
+    "build:webpack": "NODE_ENV=production webpack --mode production --config config/webpack.prod.config.js",
+    "build": "npm run clean && npm run build:webpack",
+    "test": "mocha --require config/test-compiler.js config/test-setup.js js/**/*Test.js",
+    "lint": "eslint js",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "check": "npm run lint && npm run flow"
+  },
+  "author": "Jyoti Puri",
+  "license": "MIT"
+}

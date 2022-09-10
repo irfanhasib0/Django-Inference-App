@@ -1,0 +1,54 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-scripts": "5.0.0",
+    "web-vitals": "^2.1.4",
+    "axios": "^0.21.1",
+    "bootstrap": "^5.0.2",
+    "react-bootstrap": "^1.6.1",
+    "sass" : "^1.50.0",
+    "draft-js" : "^0.11.7",
+    "react-draft-wysiwyg-local-a" : "file:../libs/react-draft-wysiwyg-local-a",
+    "draftjs-utils" : "file:../libs/draftjs-utils",
+    "react-canvas-draw" : "^1.2.1",
+    "perfect-freehand": "^1.1.0",
+    "roughjs": "^4.5.2",
+    "react-icons" : "4.4.0",
+    "react-slidedown": "^2.4.5",
+    "resize-observer-polyfill": "^1.5.1",
+    "react-icons" : "4.4.0",
+    "react-intl" : "6.0.5",
+    "react-switch" : "7.0.0",
+    "classnames": "^2.2.6",
+    "typescript": "^4.7.4",
+    "@popperjs/core": "^2.4.0"
+  },
+  "scripts": {
+    "start": "react-scripts start --openssl-legacy-provider start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

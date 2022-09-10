@@ -1,0 +1,23 @@
+{
+  "name": "react-draft-wysiwyg-local-a",
+  "version": "1.12.13.3",
+  "description": "A wysiwyg on top of DraftJS.",
+  "main": "dist/react-draft-wysiwyg.js",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "prop-types": "^15.6.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build:webpack": "cross-env NODE_ENV=production webpack --config config/webpack.config.js",
+    "build": "npm run clean && npm run build:webpack",
+    "test": "cross-env BABEL_ENV=test mocha --compilers js:config/test-compiler.js config/test-setup.js src/**/*Test.js",
+    "lint": "eslint src",
+    "lintdocs": "eslint docs/src",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "check": "npm run lint && npm run flow",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "license": "MIT"
+}

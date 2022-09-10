@@ -1,0 +1,59 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-scripts": "5.0.0",
+    "web-vitals": "^1.1.2",
+    "axios": "^0.21.1",
+    "bootstrap": "^5.0.2",
+    "react-bootstrap": "^1.6.1",
+    "sass" : "^1.50.0",
+    "draft-js" : "^0.10.x",
+    "draft-js-custom-styles": "^2.1.1",
+    "react-draft-wysiwyg-local-a" : "file:../libs/react-draft-wysiwyg-local-a",
+    "draftjs-utils" : "file:../libs/draftjs-utils",
+    "react-canvas-draw" : "^1.2.0",
+    "perfect-freehand": "^0.4.10",
+    "roughjs": "^4.3.1",
+    "@fortawesome/fontawesome-svg-core": "^6.1.0",
+    "@fortawesome/free-solid-svg-icons": "^6.1.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "styled-components": "^4.2.1",
+    "react-slidedown": "^2.4.5",
+    "resize-observer-polyfill": "^1.5.1",
+    "react-icons" : "4.4.0",
+    "react-intl" : "6.0.5",
+    "react-switch" : "7.0.0"
+    
+  },
+  "scripts": {
+    "start": "react-scripts start --openssl-legacy-provider start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

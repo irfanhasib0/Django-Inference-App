@@ -1,0 +1,2 @@
+sudo docker restart webapp_server_node_1
+sudo docker restart webapp_client_react_1

@@ -1,0 +1,96 @@
+version: "3.3"
+  
+services:
+    
+  db_mysql:
+    image: mysql
+    restart: always
+    cap_add:
+      - SYS_NICE
+    volumes:
+      - "./db_mysql/setup.sql:/docker-entrypoint-initdb.d/setup.sql"
+    ports:
+      - "9906:3306"
+    environment:
+      MYSQL_DATABASE: notes
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_HOST: localhost
+    #command:
+    #  - /bin/sh -c 'mysql CREATE USER $MYSQL_USER@'localhost' IDENTIFIED BY $MYSQL_PASSWORD;'
+    networks:
+       - default
+    
+  server_node:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: "./server_node"
+    environment:
+    depends_on:
+      - db_mysql
+    volumes:
+      - /app/node_modules
+      - ./server_node:/app
+      - ./server_node/files:/app_data/files
+    environment:
+      MYSQL_DATABASE: notes
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_HOST_IP: db_mysql
+    networks:
+       - default
+
+  client_react:
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    build:
+      dockerfile: Dockerfile
+      context: "./client_react"
+    volumes:
+      - /app/node_modules
+      - ./client_react:/app
+      - ./client_react/index.html:/app/index.html
+    #command: /bin/sh -c "node_modules/react-scripts/bin/react-scripts.js start"
+    command: /bin/sh -c "npm start"
+      
+  server_nginx:
+    container_name: sever_nginx
+    image: nginx:stable-alpine
+    restart: always
+    build : ./server_nginx
+    depends_on:
+      - server_node
+      - client_react
+
+    environment:
+      CVAT_HOST: localhost
+    ports:
+      - '9006:9006'
+      - '1935:1935'
+      
+    volumes:
+      - ./server_nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./server_nginx/conf/http.conf:/etc/nginx/conf/http.conf:ro
+      - ./server_nginx/conf/rtmp.conf:/etc/nginx/conf/rtmp.conf:ro
+      - ./files/static:/webapp/static
+      - ./files/media:/webapp/media
+      #- ./docker_nginx/uwsgi_params:/etc/nginx/uwsgi_params:ro
+    command: /bin/sh -c "/etc/nginx/sbin/nginx -g 'daemon off;'"
+   
+    #networks:
+    #  - web_net   
+  #server_flask:
+  #  build:
+  #     dockerfile: Dockerfile
+  #     context: "./server_flask"
+       
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/24
+
