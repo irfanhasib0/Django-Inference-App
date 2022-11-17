@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  display: flex;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  -moz-column-width: 22em;
+  -webkit-column-width: 22em;
+  column-width: 22em;
+}
+
+    
+
+/*-moz-column-width: 22em; *//* Firefox */
+/*-webkit-column-width: 22em; *//* webkit, Safari, Chrome */
+/*column-width: 22em;*/
+body{
+    background-color: #FFFFFF
+}
+/*remove standard list and bullet formatting from ul*/
+.columns1 ul
+{
+    margin: 20px;
+    padding: 0;
+    list-style-type: none;
+}
+/* correct webkit/chrome uneven margin on the first column*/
