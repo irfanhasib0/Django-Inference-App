@@ -1,4 +1,4 @@
-import {Container, Card, Row, Col, Button } from 'react-bootstrap'
+import { Card, Row, Col, Button } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {useState, useRef, useEffect} from 'react'
 import logo from './logo.svg';
@@ -10,11 +10,25 @@ import axios from 'axios';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { Divider, Container, Sidebar, Sidenav, Nav} from 'rsuite'
+import '../node_modules/rsuite/dist/rsuite.min.css';
+import BuildGraph from './graph'
+
+const headerStyles = {
+  padding: 10,
+  fontSize: 16,
+  height: 56,
+  background: '#34c3ff',
+  color: ' #fff',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden'
+};
+
 
 function DropdownBtn(props) {
   return (
-    <Dropdown as={ButtonGroup}>
-      <Dropdown.Toggle variant="success" id="dropdown-basic">
+    <Dropdown as={props.as}>
+      <Dropdown.Toggle variant="outline-info" id="dropdown-basic">
         {props.name}
       </Dropdown.Toggle>
 
@@ -32,6 +46,7 @@ function VisBlock() {
    const fref = useRef('null')
    
    useEffect(()=>{
+   console.log(modelGraph)
    const iframe = fref.current
    
    iframe.onload = function()
@@ -49,14 +64,36 @@ function VisBlock() {
   const [layerOutput,setLayerOutput] = useState('')
   const [imageOutput,setImageOutput] = useState('')
   const [imageDir,setImageDir]       = useState('')
+  const [modelName,setModelName]     = useState('Model')
+  const [modelGraph,setModelGraph]   = useState('')
   
   const modelNames = ['resnetv2_50','mobilenetv2']
   const imageDirs  = ['car','train']
   const imageNames = ['1.jpg','2.jpg','3.jpg']
+
+  const [elems,setElem] = useState(<div>  </div>)
+  
+  async function get_model(model) {
+     const resp = await axios.get('http://localhost:9001/'+model+'/')//.then(response => { console.log(response.data) });
+     let elems = []
+     let key = 0
+     for (let elem of resp.data){
+         elems.push(<div style={{marginBottom : '0px' , marginTop : '3px'}}> <button variant='outline-dark' style={{height:'20px', width:'auto', marginTop : '0px' }} onClick={()=>get_layer(elem)} key={key} > {elem} </button> </div>)
+         key = key + 1
+     }
+      
+      setElem(elems)
+      setModelName(model)
+    }
   
   async function get_layer(layer_name){
       const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
       setLayerOutput(resp.data['src'])
+  }
+
+  async function get_graph(layer_name){
+      const resp = await axios.get('http://localhost:9001/graph')
+      setModelGraph(resp.data)
   }
 
   async function get_image(image_name){
@@ -64,24 +101,11 @@ function VisBlock() {
       const resp = await axios.get('http://localhost:9001/image/'+imageDir+'/'+imageOutput)
       setImageOutput(resp.data['src'])
   }
-
-  const [elems,setElem] = useState(<div>  </div>)
-  async function get_model(model) {
-     const resp = await axios.get('http://localhost:9001/'+model+'/')//.then(response => { console.log(response.data) });
-     let elems = []
-     let key = 0
-     for (let elem of resp.data){
-         elems.push(<div> <Button variant='outline-info' style={{height:'40px', marginTop : '10px'}} onClick={()=>get_layer(elem)} key={key} > {elem} </Button> </div>)
-         key = key + 1
-     }
-      
-      setElem(elems)
-    }
   
   //backgroundImage : `url(${bg1})`
   const getModelMenuItem=(name)=>{
   return (<Dropdown.Item> 
-  <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{get_model(name)}} ><BsBook/></Button>{name}
+  <Button variant='outline-info' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{get_model(name)}} ><BsBook/></Button>{name}
   </Dropdown.Item>)
   }
   
@@ -103,31 +127,42 @@ function VisBlock() {
   //<DropdownBtn items = {modelMenueItems} name='Models'/>
   return (
     <>
-      
       <Row>
+      <Button variant='primary' onClick = {()=>get_graph()}> </Button>
+      <BuildGraph gph = {modelGraph}/>
+      <DropdownBtn items = {modelMenueItems} name={modelName}/>
+      <Col xs={4} style={{backgroundColor : '#ffffff' }}>
+      
       <div style={{marginLeft:'10px', marginTop:'10px'}} >
-      <DropdownBtn items = {modelMenueItems} name='Models'/>
-      </div>
-      <Col xs={4} style={{backgroundColor : '#eeeeee' }}>
-      <div style={{marginLeft:'10px', marginTop:'10px'}} >
+      <Sidebar
+          style={{ display: 'flex', flexDirection: 'column' }}
+          width={'auto'}//{1 ? 260 : 56}
+          collapsible
+      >
       
       {elems}
+      {'...'}
+      
+      </Sidebar>
       </div>
+      
       </Col>
       
       <Col xs={8}>
+      
       <div style={{marginLeft : "0px", marginTop : "10px"}}>
-      <DropdownBtn style={{}} items = {imgDirItems} name='Image Class'/>
+      <DropdownBtn as={ButtonGroup} items = {imgDirItems} name='Image Class'/>
       {' '}
-      <DropdownBtn items = {imgNameItems} name='Image No'/>
+      <DropdownBtn as={ButtonGroup} items = {imgNameItems} name='Image No'/>
       </div>
-
+      < Divider vertical>
       <div style={{marginLeft:'0px'}}>
       
       <img style={{display:'block', marginLeft:'50px', marginTop: '50px'}} src={'data:image/jpg;base64,' + imageOutput}/>
       <img style={{width:'100%',marginLeft:'0px'}} src={'data:image/png;base64,' + layerOutput}/>
       
       </div>
+       </Divider>
       <iframe ref={fref}/>
       </Col>
       </Row> 

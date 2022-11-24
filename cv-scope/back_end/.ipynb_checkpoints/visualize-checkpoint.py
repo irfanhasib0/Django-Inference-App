@@ -100,7 +100,7 @@ text {
 <body>
 """
 
-_D3_HTML_TEMPLATE = """
+D3_HTML_TEMPLATE = """
   <script>
     function buildGraph() {
       // Build graph data
@@ -340,7 +340,7 @@ def GenerateGraph(subgraph_idx, g, opcode_mapper):
     })
   graph_str = json.dumps({"nodes": nodes, "edges": edges})
 
-  html = _D3_HTML_TEMPLATE % (graph_str, subgraph_idx)
+  html = D3_HTML_TEMPLATE % (graph_str, subgraph_idx)
   return html
 
 

@@ -33,7 +33,7 @@ function App() {
    const fref = useRef('null')
    
    useEffect(()=>{
-   
+  
    
   })
     
@@ -41,20 +41,10 @@ function App() {
   const [imageOutput,setImageOutput] = useState('')
   const [imageDir,setImageDir]       = useState('')
   
+  
   const modelNames = ['resnetv2_50','mobilenetv2']
   const imageDirs  = ['car','train']
   const imageNames = ['1.jpg','2.jpg','3.jpg']
-  
-  async function get_layer(layer_name){
-      const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
-      setLayerOutput(resp.data['src'])
-  }
-
-  async function get_image(image_name){
-      setImageOutput(image_name)
-      const resp = await axios.get('http://localhost:9001/image/'+imageDir+'/'+imageOutput)
-      setImageOutput(resp.data['src'])
-  }
 
   const [elems,setElem] = useState(<div>  </div>)
   async function get_model(model) {
@@ -69,6 +59,23 @@ function App() {
       setElem(elems)
     }
   
+  async function get_layer(layer_name){
+      const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
+      setLayerOutput(resp.data['src'])
+  }
+  
+  
+  async function get_layer(layer_name){
+      const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
+      setLayerOutput(resp.data['src'])
+  }
+
+  async function get_image(image_name){
+      setImageOutput(image_name)
+      const resp = await axios.get('http://localhost:9001/image/'+imageDir+'/'+imageOutput)
+      setImageOutput(resp.data['src'])
+  }
+
   //backgroundImage : `url(${bg1})`
   const getModelMenuItem=(name)=>{
   return (<Dropdown.Item> 
@@ -89,15 +96,14 @@ function App() {
   }
   
   const modelMenueItems = modelNames.map(getModelMenuItem)
-  const imgDirItems = imageDirs.map(getImgDirItem)
-  const imgNameItems = imageNames.map(getImgNameItem)
+  const imgDirItems     = imageDirs.map(getImgDirItem)
+  const imgNameItems    = imageNames.map(getImgNameItem)
   return (
     <>
       
-      
       <Row>
       
-      <Col xs={6}>
+      <Col xs={8}>
       <VisBlock/>
       </Col>
      

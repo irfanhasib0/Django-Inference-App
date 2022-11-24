@@ -8,38 +8,45 @@ import {BsJournalRichtext, BsBook, BsStack, BsVectorPen,BsGem,BsLinkedin,BsFillT
 import {AiOutlineMail, AiOutlineLogin, AiOutlineLogout, AiOutlineCaretUp, AiOutlineCopy} from 'react-icons/ai';
 import axios from 'axios';
 
+import Dropdown from 'react-bootstrap/Dropdown';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import VisBlock from './VisBlock'
+
+function DropdownBtn(props) {
+  return (
+    <Dropdown as={ButtonGroup}>
+      <Dropdown.Toggle variant="success" id="dropdown-basic">
+        {props.name}
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        {props.items}
+        </Dropdown.Menu>
+    </Dropdown>
+  );
+}
+
+//export default BasicExample;
+
+
 function App() {
    const fref = useRef('null')
    
    useEffect(()=>{
-   const iframe = fref.current
-   
-   iframe.onload = function()
-        {
-          iframe.style.height = 
-          iframe.contentWindow.document.body.scrollHeight + 'px';
-          iframe.style.width  = 
-          iframe.contentWindow.document.body.scrollWidth  + 'px';
-              
-        }
-        
+  
    
   })
     
   const [layerOutput,setLayerOutput] = useState('')
   const [imageOutput,setImageOutput] = useState('')
+  const [imageDir,setImageDir]       = useState('')
   
-  async function get_layer(layer_name){
-      const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
-      setLayerOutput(resp.data['src'])
-  }
+  
+  const modelNames = ['resnetv2_50','mobilenetv2']
+  const imageDirs  = ['car','train']
+  const imageNames = ['1.jpg','2.jpg','3.jpg']
 
-  async function get_image(image_name){
-      const resp = await axios.get('http://localhost:9001/image/'+image_name)
-      setImageOutput(resp.data['src'])
-  }
-
-  const [elems,setElem] = useState(<div> '...' </div>)
+  const [elems,setElem] = useState(<div>  </div>)
   async function get_model(model) {
      const resp = await axios.get('http://localhost:9001/'+model+'/')//.then(response => { console.log(response.data) });
      let elems = []
@@ -51,33 +58,59 @@ function App() {
       
       setElem(elems)
     }
-  //get_layer()
-  //console.log(layerOutput)
-  //
-  //{layerOutput}
+  
+  async function get_layer(layer_name){
+      const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
+      setLayerOutput(resp.data['src'])
+  }
+  
+  
+  async function get_layer(layer_name){
+      const resp = await axios.get('http://localhost:9001/layer/'+layer_name+'/')
+      setLayerOutput(resp.data['src'])
+  }
+
+  async function get_image(image_name){
+      setImageOutput(image_name)
+      const resp = await axios.get('http://localhost:9001/image/'+imageDir+'/'+imageOutput)
+      setImageOutput(resp.data['src'])
+  }
+
   //backgroundImage : `url(${bg1})`
+  const getModelMenuItem=(name)=>{
+  return (<Dropdown.Item> 
+  <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{get_model(name)}} ><BsBook/></Button>{name}
+  </Dropdown.Item>)
+  }
+  
+  const getImgDirItem=(name)=>{
+  return (<Dropdown.Item> 
+  <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{setImageDir(name)}} ><BsBook/></Button>{name}
+  </Dropdown.Item>)
+  }
+  
+  const getImgNameItem=(name)=>{
+  return (<Dropdown.Item> 
+  <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{get_image(name)}} ><BsBook/></Button>{name}
+  </Dropdown.Item>)
+  }
+  
+  const modelMenueItems = modelNames.map(getModelMenuItem)
+  const imgDirItems     = imageDirs.map(getImgDirItem)
+  const imgNameItems    = imageNames.map(getImgNameItem)
   return (
     <>
       
       <Row>
-      <Col xs={2} style={{backgroundColor : 'gray' }}>
-      {elems}
+      
+      <Col xs={8}>
+      <VisBlock/>
       </Col>
-      
-      <Col xs={9}>
-      <div style={{marginLeft : "80px", marginTop : "10px"}}>
-      <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{get_model('resnetv2_50')}} ><BsBook/></Button>{'ResNetV2_50'}
-      
-      <Button variant='outline-success' style={{width : '25px', height : '25px', padding : '0px', marginLeft : '5px' }} onClick={()=>{get_image('car/2.jpg')}} ><BsBook/></Button>{'ResNetV2_50'}
-      </div>
-
-      <div>
-      <img style={{display:'block'}} src={'data:image/jpg;base64,' + imageOutput}/>
-      <img style={{}} src={'data:image/png;base64,' + layerOutput}/>
-      </div>
-      
-      <iframe ref={fref} src={""} scrolling="no" width={"100%"} height={"10000 px"}></iframe>
+     
+      <Col xs={6} style={{backgroundColor : 'ffffff' }}>
+      {}
       </Col>
+     
       </Row> 
       </>
   );

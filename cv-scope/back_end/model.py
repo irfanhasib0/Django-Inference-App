@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 from gradcam import *
+from visualize import *
+
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 import tensorflow as tf
@@ -53,7 +55,6 @@ def get_model(model_name='resnet_v2_50'):
 def b2r(x):
     return cv2.cvtColor(x,cv2.COLOR_BGR2RGB)
 
-
 def get_img(file_path='train/1.jpg'):
     path = f'./data/imgs/{file_path}' 
     img = cv2.imread(path)
@@ -84,3 +85,73 @@ def plot_layer_fmaps(model,img,conv_layer_name):
     img_array  = img[np.newaxis,:,:,:]/255.0
     arr,preds  = grad_model(img_array)
     return plot_fmap(arr[0])   
+
+
+def GenerateGraph(g, opcode_mapper):
+  """Produces the HTML required to have a d3 visualization of the dag."""
+
+  def TensorName(idx):
+    return "t%d" % idx
+
+  def OpName(idx):
+    return "o%d" % idx
+
+  edges = []
+  nodes = []
+  first = {}
+  second = {}
+  pixel_mult = 200  # TODO(aselle): multiplier for initial placement
+  width_mult = 170  # TODO(aselle): multiplier for initial placement
+  for op_index, op in enumerate(g["operators"] or []):
+    if op["inputs"] is not None:
+      for tensor_input_position, tensor_index in enumerate(op["inputs"]):
+        if tensor_index not in first:
+          first[tensor_index] = ((op_index - 0.5 + 1) * pixel_mult,
+                                 (tensor_input_position + 1) * width_mult)
+        edges.append({
+            "source": TensorName(tensor_index),
+            "target": OpName(op_index)
+        })
+    if op["outputs"] is not None:
+      for tensor_output_position, tensor_index in enumerate(op["outputs"]):
+        if tensor_index not in second:
+          second[tensor_index] = ((op_index + 0.5 + 1) * pixel_mult,
+                                  (tensor_output_position + 1) * width_mult)
+        edges.append({
+            "target": TensorName(tensor_index),
+            "source": OpName(op_index)
+        })
+
+    nodes.append({
+        "id": OpName(op_index),
+        "name": opcode_mapper(op["opcode_index"]),
+        "group": 2,
+        "x": pixel_mult,
+        "y": (op_index + 1) * pixel_mult
+    })
+  for tensor_index, tensor in enumerate(g["tensors"]):
+    initial_y = (
+        first[tensor_index] if tensor_index in first else
+        second[tensor_index] if tensor_index in second else (0, 0))
+
+    nodes.append({
+        "id": TensorName(tensor_index),
+        "name": "%r (%d)" % (getattr(tensor, "shape", []), tensor_index),
+        "group": 1,
+        "x": initial_y[1],
+        "y": initial_y[0]
+    })
+  graph_str = json.dumps({"nodes": nodes, "edges": edges})
+
+  return graph_str
+
+def get_graph():
+    with open('./data/resnetv2_50.tflite', "rb") as file_handle:
+        file_data = bytearray(file_handle.read())
+        data = CreateDictFromFlatbuffer(file_data)
+
+    opcode_mapper = OpCodeMapper(data)
+    g = (data["subgraphs"])[0]
+    graph = GenerateGraph(g, opcode_mapper)
+    return graph
+    

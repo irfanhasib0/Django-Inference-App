@@ -55,6 +55,10 @@ def get_img_array(_dir,_file):
     image_data = base64.b64encode(image_buffer.read()).decode('utf-8')
     return Response(response=json.dumps({'src':image_data,'content_type':'image/jpg'}),status=200)
 
+@app.route('/graph')
+def graph():
+    return get_graph()
+    
     
 if __name__ == '__main__':
     app.run(host='127.0.0.1',port=9001,debug=True)
